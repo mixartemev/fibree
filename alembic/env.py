@@ -1,4 +1,6 @@
 from logging.config import fileConfig
+from os import getenv as env
+from dotenv import load_dotenv
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -23,6 +25,11 @@ target_metadata = None
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+load_dotenv()  # take environment variables from .env
+sql_url = '{drv}://{user}:{pswd}@{host}/{db}'.format(
+    drv="postgresql", user=env('DB_USER'), pswd=env('DB_PASS'), host=env('DB_HOST'), db=env('DB_NAME'),
+)
+config.set_main_option('sqlalchemy.url', sql_url)
 
 
 def run_migrations_offline():
