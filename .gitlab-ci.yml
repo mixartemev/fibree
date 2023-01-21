@@ -1,0 +1,33 @@
+variables:
+  HOST: spbx.hftrade.ru
+  PORT: 8444 # SET PORT FOR HOST MACHINE
+  WH_PATH: tg/webhooks/${BT}
+  IMG_NAME: ${CI_REGISTRY}/${CI_PROJECT_PATH}/${CI_COMMIT_REF_SLUG}
+
+stages:
+  - image build
+  - deploy
+
+image building:
+  image: docker
+  services:
+    - name: docker:dind
+  stage: image build
+  script:
+    - echo "envs BT=${BT}"
+    - echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
+    - docker build -t "${IMG_NAME}:latest" --build-arg BT=${BT} --build-arg WH_HOST=${HOST} --build-arg WH_PATH=${WH_PATH} .
+    - docker push "${IMG_NAME}:latest"
+
+deploy prod:
+  image: registry.gitlab.com/mcity/inv
+  stage: deploy
+  dependencies:
+    - image building
+  script:
+    - scp deploy.sh dev@${HOST}:${CI_PROJECT_NAME}/
+    - ssh dev@${HOST} "cd ${CI_PROJECT_NAME}; ./deploy.sh ${CI_REGISTRY_USER} ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY} ${IMG_NAME} ${CI_PROJECT_NAME}-${CI_COMMIT_REF_NAME} ${PORT}"
+# when: manual
+  only:
+    refs:
+      - master

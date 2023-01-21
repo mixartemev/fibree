@@ -27,9 +27,9 @@ class Bcs:
     updated_at: datetime | None = field(default=None, metadata={'sa': Column(DateTime)})
 
     parent: Bcs | None = field(default=None, metadata={'sa': relationship('Bcs', remote_side=[id], back_populates='parent_reverse')})
-    parent_reverse: list[Bcs] = field(default_factory=list, metadata={'sa': relationship('Bcs', remote_side=[parent_id], back_populates='parent')})
-    buildings: list[Buildings] = field(default_factory=list, metadata={'sa': relationship('Buildings', back_populates='bc')})
-    offers: list[Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='bc')})
+    parent_reverse: [Bcs] = field(default_factory=list, metadata={'sa': relationship('Bcs', remote_side=[parent_id], back_populates='parent')})
+    buildings: [Buildings] = field(default_factory=list, metadata={'sa': relationship('Buildings', back_populates='bc')})
+    offers: [Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='bc')})
 
 
 @mapper_registry.mapped
@@ -41,7 +41,7 @@ class Locations:
     id: int = field(init=False, metadata={'sa': Column(Integer, primary_key=True)})
     name: str | None = field(default=None, metadata={'sa': Column(String(255))})
 
-    newbuildings: list[Newbuildings] = field(default_factory=list, metadata={'sa': relationship('Newbuildings', back_populates='region')})
+    newbuildings: [Newbuildings] = field(default_factory=list, metadata={'sa': relationship('Newbuildings', back_populates='region')})
 
 
 @mapper_registry.mapped
@@ -82,7 +82,7 @@ class SearchResults:
     auction_bet: int | None = field(default=None, metadata={'sa': Column(BigInteger)})
     last_updated: datetime | None = field(default=None, metadata={'sa': Column(DateTime)})
 
-    search_pivots: list[SearchPivots] = field(default_factory=list, metadata={'sa': relationship('SearchPivots', back_populates='offer')})
+    search_pivots: [SearchPivots] = field(default_factory=list, metadata={'sa': relationship('SearchPivots', back_populates='offer')})
 
 
 @mapper_registry.mapped
@@ -96,7 +96,7 @@ class SearchSources:
     params: dict | None = field(default=None, metadata={'sa': Column(JSON)})
     last_upd: datetime | None = field(default=None, metadata={'sa': Column(DateTime)})
 
-    search_pivots: list[SearchPivots] = field(default_factory=list, metadata={'sa': relationship('SearchPivots', back_populates='req')})
+    search_pivots: [SearchPivots] = field(default_factory=list, metadata={'sa': relationship('SearchPivots', back_populates='req')})
 
 
 @mapper_registry.mapped
@@ -116,8 +116,8 @@ class Users:
     account_type: str | None = field(default=None, metadata={'sa': Column(Enum('realtor', 'agency', 'uk', 'owner', 'specialist', 'managementCompany', 'rentDepartment', 'anunimus-dolboebus'))})
     trust: str | None = field(default=None, metadata={'sa': Column(Enum('involved', 'notInvolved', 'new', 'excluded', 'danger'))})
 
-    phones: list[Phones] = field(default_factory=list, metadata={'sa': relationship('Phones', back_populates='user')})
-    offers: list[Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='users')})
+    phones: [Phones] = field(default_factory=list, metadata={'sa': relationship('Phones', back_populates='user')})
+    offers: [Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='users')})
 
 
 @mapper_registry.mapped
@@ -132,9 +132,9 @@ class Newbuildings:
     address: str | None = field(default=None, metadata={'sa': Column(String(255))})
 
     region: Locations | None = field(default=None, metadata={'sa': relationship('Locations', back_populates='newbuildings')})
-    houses: list[Houses] = field(default_factory=list, metadata={'sa': relationship('Houses', back_populates='newbuilding')})
-    buildings: list[Buildings] = field(default_factory=list, metadata={'sa': relationship('Buildings', back_populates='newbuilding')})
-    offers: list[Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='newbuilding')})
+    houses: [Houses] = field(default_factory=list, metadata={'sa': relationship('Houses', back_populates='newbuilding')})
+    buildings: [Buildings] = field(default_factory=list, metadata={'sa': relationship('Buildings', back_populates='newbuilding')})
+    offers: [Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='newbuilding')})
 
 
 @mapper_registry.mapped
@@ -176,7 +176,7 @@ class Houses:
     address: str | None = field(default=None, metadata={'sa': Column(String(255))})
 
     newbuilding: Newbuildings | None = field(default=None, metadata={'sa': relationship('Newbuildings', back_populates='houses')})
-    offers: list[Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='house')})
+    offers: [Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='house')})
 
 
 @mapper_registry.mapped
@@ -219,7 +219,7 @@ class Buildings:
 
     bc: Bcs | None = field(default=None, metadata={'sa': relationship('Bcs', back_populates='buildings')})
     newbuilding: Newbuildings | None = field(default=None, metadata={'sa': relationship('Newbuildings', back_populates='buildings')})
-    offers: list[Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='building')})
+    offers: [Offers] = field(default_factory=list, metadata={'sa': relationship('Offers', back_populates='building')})
 
 
 @mapper_registry.mapped
@@ -269,11 +269,11 @@ class Offers:
     users: Users | None = field(default=None, metadata={'sa': relationship('Users', back_populates='offers')})
     house: Houses | None = field(default=None, metadata={'sa': relationship('Houses', back_populates='offers')})
     newbuilding: Newbuildings | None = field(default=None, metadata={'sa': relationship('Newbuildings', back_populates='offers')})
-    bets: list[Bets] = field(default_factory=list, metadata={'sa': relationship('Bets', back_populates='offer')})
-    history_price: list[HistoryPrice] = field(default_factory=list, metadata={'sa': relationship('HistoryPrice', back_populates='offers')})
-    history_promo: list[HistoryPromo] = field(default_factory=list, metadata={'sa': relationship('HistoryPromo', back_populates='offers')})
-    prices: list[Prices] = field(default_factory=list, metadata={'sa': relationship('Prices', back_populates='offer')})
-    stats_daily: list[StatsDaily] = field(default_factory=list, metadata={'sa': relationship('StatsDaily', back_populates='offers')})
+    bets: [Bets] = field(default_factory=list, metadata={'sa': relationship('Bets', back_populates='offer')})
+    history_price: [HistoryPrice] = field(default_factory=list, metadata={'sa': relationship('HistoryPrice', back_populates='offers')})
+    history_promo: [HistoryPromo] = field(default_factory=list, metadata={'sa': relationship('HistoryPromo', back_populates='offers')})
+    prices: [Prices] = field(default_factory=list, metadata={'sa': relationship('Prices', back_populates='offer')})
+    stats_daily: [StatsDaily] = field(default_factory=list, metadata={'sa': relationship('StatsDaily', back_populates='offers')})
 
 
 @mapper_registry.mapped
